@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { number } = require("zod");
 const Schema = mongoose.Schema;
 
 const progressSchema = new Schema({
@@ -15,6 +16,13 @@ const progressSchema = new Schema({
     value: {
         type: Number,
         required: true
+    },
+    hours:{
+        type: Number,
+        required: true
+    },
+    questions:{
+        type: Number
     },
     date: {
         type: Date,
