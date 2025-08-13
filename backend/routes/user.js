@@ -1,56 +1,63 @@
 const { Router } = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const JWT_USER_PASSWORD = "your jwt password"
+const JWT_USER_PASSWORD = "userpassword326";
 const userRouter = Router();
+const {userModel} = require("../models/user");
 
 userRouter.post("/register", async (req, res) => {
-    const {email, userName, password} = req.body;
+    try {
+        const {email, userName, password} = req.body;
 
-        if(!email || !userName || !password){
-        return res.status(400).json({
-            message:"All fields are required"
+            if(!email || !userName || !password){
+            return res.status(400).json({
+                message:"All fields are required"
+            })
+        }
+        
+        const existingUser = await userModel.findOne({email});
+        if(existingUser){
+            return res.status(400).json({
+                message: "User already exists"
+            })
+        }
+        const hashedPassword = await bcrypt.hash(password, 5);
+        
+        const user = await userModel.create({
+            email: email,
+            userName: userName,
+            password: hashedPassword
+        })
+        return res.status(201).json({
+            _id: user._id,
+            email: user.email,
+            userName: user.userName,
+            message:"You are successfully registered"
+        })
+    } catch(error) {
+        return res.status(500).json({
+            message:"server error", error
         })
     }
-    
-    const existingUser = await authModel.findOne({email});
-    if(existingUser){
-        res.status(400).json({
-            message: "user already exists"
-        })
-    }
-    const hashedPassword = await bcrypt.hash(password, 5);
-    //
-    console.log(hashedPassword);
-    const user = await authModel.create({
-        email: email,
-        userName: userName,
-        password: hashedPassword
-    })
-    return res.status(201).json({
-        _id: user._id,
-        email: user.email,
-        userName: user.userName,
-        message:"Your are successfully registered"
-    })
 
 });
 
 userRouter.post("/login", async (req, res) => {
+    try{
     const {userName, password} = req.body;
 
     if(!userName || !password){
-        res.json({
-            message: "All field are required"
+        return res.status(400).json({
+            message: "All fields are required"
         })
     }
-    const member = await authModel.findOne({
+    const member = await userModel.findOne({
         userName: userName
     })
 
     if(!member){
-        return res.json({
-            message: "No user Found"
+        return res.status(404).json({
+            message: "No user found"
         })
     }
 
@@ -59,13 +66,18 @@ userRouter.post("/login", async (req, res) => {
     if(passwordCheck){
         const token = jwt.sign({
             id: member._id.toString()
-        },JWT_AUTH_PASSWORD)
-        res.json({
+        },JWT_USER_PASSWORD)
+        return res.json({
             token
         })
     } else{
-        res.status(400).json({
-            message: "invalid Credentials",
+        return res.status(400).json({
+            message: "Invalid credentials",
+        })
+    }
+    } catch(error){
+        return res.status(500).json({
+            message: "Server error", error
         })
     }
 
