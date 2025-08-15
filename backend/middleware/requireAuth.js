@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const JWT_USER_PASSWORD = "authpassword326";
+const JWT_AUTH_PASSWORD = "authpassword326";
 
 function authMiddleware (req, res, next) {
     const authHeader = req.headers.authorization ;
@@ -10,7 +10,7 @@ function authMiddleware (req, res, next) {
     }
     const token = authHeader.split(" ")[1];
     try { 
-        const verified = jwt.verify(token, JWT_USER_PASSWORD)
+        const verified = jwt.verify(token, JWT_AUTH_PASSWORD)
         req.userId = verified.id;
         next()
     } catch(error) {
