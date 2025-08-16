@@ -66,7 +66,7 @@ userRouter.post("/login", async (req, res) => {
     if(passwordCheck){
         const token = jwt.sign({
             id: member._id.toString()
-        },JWT_USER_PASSWORD)
+        },JWT_USER_PASSWORD, {expiresIn: "7d"})
         return res.json({
             token
         })
