@@ -72,7 +72,7 @@ progressRouter.post("/github", requireAuth, async (req, res) => {
     try {const userId = req.userId;
     const date = Date.now();
     const type = 'github'
-    const {hours, questions} = req.body;
+    const hours= req.body;
     const progress = await progressModel.create({
         userId,
         date,
