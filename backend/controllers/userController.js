@@ -1,11 +1,11 @@
 require("dotenv").config();
 const bcrypt = require("bcrypt");
-const {userModel} = require("../models/user");
+const { userModel } = require("../models/user");
 const jwt = require("jsonwebtoken");
-const JWT_USER_PASSWORD = process.env.JWT_USER_PASSWORD;
+const JWT_SECRET = process.env.JWT_SECRET || process.env.JWT_USER_PASSWORD;
 
-if(!JWT_USER_PASSWORD){
-    throw new Error("JWT_USER_PASSWORD is not set in envirnoment variables.")
+if(!JWT_SECRET){
+    throw new Error("JWT secret is not set in environment variables.")
 }
 
 const registerUser = async (req, res) => {

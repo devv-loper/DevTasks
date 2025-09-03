@@ -1,9 +1,9 @@
 const { Router } = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const JWT_USER_PASSWORD = "userpassword326";
+const JWT_SECRET = process.env.JWT_SECRET || process.env.JWT_USER_PASSWORD || "";
 const userRouter = Router();
-const {userModel} = require("../models/user");
+const { userModel } = require("../models/user");
 
 userRouter.post("/register", async (req, res) => {
     try {
@@ -35,9 +35,7 @@ userRouter.post("/register", async (req, res) => {
             message:"You are successfully registered"
         })
     } catch(error) {
-        return res.status(500).json({
-            message:"server error", error
-        })
+    return res.status(500).json({ message:"server error", error })
     }
 
 });
@@ -64,11 +62,13 @@ userRouter.post("/login", async (req, res) => {
     const passwordCheck = await bcrypt.compare(password, member.password);
 
     if(passwordCheck){
-        const token = jwt.sign({
-            id: member._id.toString()
-        },JWT_USER_PASSWORD, {expiresIn: "7d"})
+        if (!JWT_SECRET) {
+            return res.status(500).json({ message: "JWT secret not configured" });
+        }
+        const token = jwt.sign({ id: member._id.toString() }, JWT_SECRET, { expiresIn: "7d" });
         return res.json({
-            token
+            token,
+            user: { _id: member._id, email: member.email, userName: member.userName }
         })
     } else{
         return res.status(400).json({

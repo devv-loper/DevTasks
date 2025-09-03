@@ -1,5 +1,4 @@
 const {progressModel} = require("../models/progress");
-// import progress from "../models/progress.js"
 
 const userProgress = async (req, res, type, allowQuestions = false) => {
     try{
@@ -7,11 +6,11 @@ const userProgress = async (req, res, type, allowQuestions = false) => {
         const date = Date.now()
         const {hours, questions} = req.body;
 
-        const progressData = {userId, date, hours, type};
+    const progressData = {userId, date, hours, type};
 
         if(allowQuestions && questions !== undefined) progressData.questions = questions;
 
-        const progress = await progressModel.create(progressData);
+    const progress = await progressModel.create(progressData);
 
         return res.status(201).json({
             message:"Progress added", progress
@@ -27,13 +26,8 @@ const addDsaProgress = async (req, res) => userProgress(req, res, 'DSA', true);
 
 const addCPProgress = async (req, res) => userProgress(req, res, 'CP', true);
 
-const addDevelopmentProgress = async (req, res) => userProgress(req, res, 'Development');
+const addDevelopmentProgress = async (req, res) => userProgress(req, res, 'development');
 
 const addGithubProgress = async (req, res) => userProgress(req, res, 'github')
 
-module.exports = {
-    addDsaProgress,
-    addGithubProgress,
-    addDevelopmentProgress,
-    addCPProgress
-};
+module.exports = { addDsaProgress, addGithubProgress, addDevelopmentProgress, addCPProgress };
